@@ -57,7 +57,7 @@ setup:
 
 
 .PHONY: test
-test:
+test: test/internal/Identity.js
 	$(ISTANBUL) cover node_modules/.bin/_mocha -- --recursive --timeout 20000
 	$(ISTANBUL) check-coverage --branches 100
 ifeq ($(shell node --version | cut -d . -f 1),v6)
@@ -65,3 +65,11 @@ ifeq ($(shell node --version | cut -d . -f 1),v6)
 else
 	@echo '[WARN] Doctests are only run in Node v6.x.x (current version is $(shell node --version))' >&2
 endif
+
+Z_VERSION = $(shell node --print 'require("sanctuary-type-classes/package.json").version')
+TK = v$(Z_VERSION)
+TK = dc-everything
+
+test/internal/Identity.js:
+	curl https://raw.githubusercontent.com/sanctuary-js/sanctuary-type-classes/$(TK)/test/Identity.js \
+	| sed "s/Z = require('..')/Z = require('sanctuary-type-classes')/" >'$@'
